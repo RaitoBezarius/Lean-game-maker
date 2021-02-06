@@ -34,9 +34,16 @@ class InteractiveServer:
         print('Using lean version:')
         lean_version = subprocess.run(['lean', '-v'], capture_output=True, encoding="utf-8").stdout
         print(lean_version)
-        lean_githash = re.search("commit ([a-z0-9]{12}),", lean_version).group(1)
+        lean_githash = re.search("commit ([a-z0-9]{12}),", lean_version)
+        if lean_githash:
+            lean_githash = lean_githash.group(1)
+
         # assume leanprover-community repo
-        core_url = 'https://raw.githubusercontent.com/leanprover-community/lean/{0}/library/'.format(lean_githash)
+        if lean_githash:
+            core_url = 'https://raw.githubusercontent.com/leanprover-community/lean/{0}/library/'.format(lean_githash)
+        else:
+            core_url = 'https://raw.githubusercontent.com/leanprover-community/lean/master/library/'
+
         core_name = 'lean/library'
 
         lean_p = json.loads(subprocess.check_output(['lean', '-p']))
