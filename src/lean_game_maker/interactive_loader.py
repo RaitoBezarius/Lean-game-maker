@@ -91,7 +91,7 @@ class InteractiveServer:
                         print('duplicate: {0}'.format(fn))
                     else:
                         # We want to support reproducibility, therefore timestamps before 1980.
-                        zf.write(fn, arcname=str(rel), strict_timestamp=False)
+                        zf.write(fn, arcname=str(rel), strict_timestamps=False)
                         oleans[str(rel)[:-6]] = lib_name
                         num_olean[lib_name] += 1
                         already_seen.add(rel)
