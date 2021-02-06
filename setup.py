@@ -1,16 +1,16 @@
 import os
+import os.path
 from setuptools import setup, find_packages
 from pathlib import Path
 import glob
 
 interactive_files = []
 
-LEAN_GAME_MAKER_WEB_SRC = os.environ.get('LEAN_GAME_MAKER_WEB_SOURCE', 'src/interactive_interface/dist')
+LEAN_GAME_MAKER_WEB_SRC = os.environ.get('LEAN_GAME_MAKER_WEB_SOURCE', os.path.join(os.getcwd(), 'src/interactive_interface/dist'))
 
 for f in glob.glob(f'{LEAN_GAME_MAKER_WEB_SRC}/**', recursive=True):
     if not Path(f).is_dir():
-        print(f)
-        interactive_files.append('..' + f[3:])
+        interactive_files.append(f)
 
 for f in glob.glob('src/interactive_interface/lean_server/**', recursive=True):
     if not Path(f).is_dir():
