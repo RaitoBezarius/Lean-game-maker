@@ -25,7 +25,7 @@ class InteractiveServer:
 
     def make_library(self):
         library_zip_fn = self.library_zip_fn
-        
+
         source_lib = "."
         source_lib_path = str(Path(source_lib).resolve()) + '/src'
 
@@ -90,7 +90,8 @@ class InteractiveServer:
                     elif rel in already_seen:
                         print('duplicate: {0}'.format(fn))
                     else:
-                        zf.write(fn, arcname=str(rel))
+                        # We want to support reproducibility, therefore timestamps before 1980.
+                        zf.write(fn, arcname=str(rel), strict_timestamp=False)
                         oleans[str(rel)[:-6]] = lib_name
                         num_olean[lib_name] += 1
                         already_seen.add(rel)
@@ -111,7 +112,7 @@ class InteractiveServer:
         with open(map_fn, 'w') as f:
                 json.dump(oleans, f, separators=(',', ':'))
                 f.write('\n')
-                print('Wrote olean map to {0}'.format(map_fn))        
+                print('Wrote olean map to {0}'.format(map_fn))
 
     def check_server_exists(self):
         self.js_wasm_path.mkdir(parents=True, exist_ok=True)
@@ -122,7 +123,7 @@ class InteractiveServer:
 
     def copy_files(self, make_lib=True):
         self.check_server_exists()
-        
+
         distutils.dir_util.copy_tree(self.interactive_path / 'dist', str(Path(self.outdir)))
         distutils.dir_util.copy_tree(self.js_wasm_path, str(Path(self.outdir)))
         if make_lib:
