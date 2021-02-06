@@ -4,7 +4,9 @@
   "description": "Lean Game Maker",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode=production",
+    "build-dev": "webpack"
   },
   "author": "Mohammad Pedramfar",
   "license": "Apache-2.0",
