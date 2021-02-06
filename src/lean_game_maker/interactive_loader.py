@@ -54,7 +54,11 @@ class InteractiveServer:
         oleans = {}
         num_olean = {}
         Path(library_zip_fn).parent.mkdir(parents=True, exist_ok=True)
-        with zipfile.ZipFile(library_zip_fn, mode='w', compression=zipfile.ZIP_DEFLATED, allowZip64=False, compresslevel=9) as zf:
+        with zipfile.ZipFile(library_zip_fn,
+                mode='w',
+                compression=zipfile.ZIP_DEFLATED, allowZip64=False, compresslevel=9,
+                # We want to support reproducibility, therefore timestamps before 1980.
+                strict_timestamps=False) as zf:
             for p in lean_path:
                 parts = p.parts
                 if str(p.resolve()) == source_lib_path: # if using source_lib/src
@@ -90,8 +94,7 @@ class InteractiveServer:
                     elif rel in already_seen:
                         print('duplicate: {0}'.format(fn))
                     else:
-                        # We want to support reproducibility, therefore timestamps before 1980.
-                        zf.write(fn, arcname=str(rel), strict_timestamps=False)
+                        zf.write(fn, arcname=str(rel))
                         oleans[str(rel)[:-6]] = lib_name
                         num_olean[lib_name] += 1
                         already_seen.add(rel)
