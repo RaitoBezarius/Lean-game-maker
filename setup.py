@@ -7,6 +7,8 @@ interactive_files = []
 
 LEAN_GAME_MAKER_WEB_SRC = os.environ.get('LEAN_GAME_MAKER_WEB_SOURCE', 'src/interactive_interface/dist')
 
+print(LEAN_GAME_MAKER_WEB_SOURCE)
+
 for f in glob.glob(f'{LEAN_GAME_MAKER_WEB_SRC}/**', recursive=True):
     if not Path(f).is_dir():
         interactive_files.append('..' + f[3:])
