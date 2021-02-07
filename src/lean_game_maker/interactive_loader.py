@@ -5,6 +5,22 @@ import glob, distutils.dir_util
 from pathlib import Path
 import toml
 
+def build_core_url(declared_lean_version, local_lean_version_string):
+    ver = ""
+    lean_githash = re.search("commit ([a-z0-9]{12}),", local_lean_version_string)
+    if lean_githash:
+       lean_githash = lean_githash.group(1)
+       ver = lean_githash
+   else:
+       lean_version = re.search("version ([0-9]+.[0-9]+.[0-9]+),", local_lean_version_string)
+       if lean_version:
+           lean_version = lean_version.group(1)
+           ver = "v{}".format(lean_version)
+       else:
+           ver = "v{}".format(declared_lean_version)
+
+
+    return 'https://raw.githubusercontent.com/leanprover-community/lean/{0}/library/'.format(ver)
 
 class InteractiveServer:
     def __init__(self, interactive_path, outdir, library_zip_fn):
@@ -30,16 +46,11 @@ class InteractiveServer:
         source_lib_path = str(Path(source_lib).resolve()) + '/src'
 
         subprocess.call(['leanpkg', 'build'])
-
-        # print('Using lean version:')
-        # lean_version = subprocess.run(['lean', '-v'], capture_output=True, encoding="utf-8").stdout
-        # print(lean_version)
-        # lean_githash = re.search("commit ([a-z0-9]{12}),", lean_version)
-        # if lean_githash:
-        #    lean_githash = lean_githash.group(1)
+        lean_version = subprocess.run(['lean', '-v'], capture_output=True, encoding="utf-8").stdout
+        print('Local lean version:', lean_version)
 
         # assume leanprover-community repo
-        core_url = 'https://raw.githubusercontent.com/leanprover-community/lean/v{0}/library/'.format(self.toolchain)
+        core_url = build_core_url(self.toolchain, lean_version)
         core_name = 'lean/library'
 
         lean_p = json.loads(subprocess.check_output(['lean', '-p']))
