@@ -11,14 +11,13 @@ def build_core_url(declared_lean_version, local_lean_version_string):
     if lean_githash:
        lean_githash = lean_githash.group(1)
        ver = lean_githash
-   else:
-       lean_version = re.search("version ([0-9]+.[0-9]+.[0-9]+),", local_lean_version_string)
-       if lean_version:
-           lean_version = lean_version.group(1)
-           ver = "v{}".format(lean_version)
-       else:
-           ver = "v{}".format(declared_lean_version)
-
+    else:
+        lean_version = re.search("version ([0-9]+.[0-9]+.[0-9]+),", local_lean_version_string)
+        if lean_version:
+            lean_version = lean_version.group(1)
+            ver = "v{}".format(lean_version)
+        else:
+            ver = "v{}".format(declared_lean_version)
 
     return 'https://raw.githubusercontent.com/leanprover-community/lean/{0}/library/'.format(ver)
 
