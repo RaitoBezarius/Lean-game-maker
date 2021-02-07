@@ -16,12 +16,12 @@ class InteractiveServer:
             leanpkg_toml = toml.load('leanpkg.toml')
         except FileNotFoundError:
             raise FileNotFoundError("Couldn't find a leanpkg.toml, I give up.")
-        toolchain = leanpkg_toml['package']['lean_version']
+        self.toolchain = leanpkg_toml['package']['lean_version']
 
         if os.name == 'nt':
-            self.js_wasm_path = Path(self.interactive_path / 'lean_server' / toolchain.replace(':', ' '))
+            self.js_wasm_path = Path(self.interactive_path / 'lean_server' / self.toolchain.replace(':', ' '))
         else:
-            self.js_wasm_path = Path(self.interactive_path / 'lean_server' / toolchain)
+            self.js_wasm_path = Path(self.interactive_path / 'lean_server' / self.toolchain)
 
     def make_library(self):
         library_zip_fn = self.library_zip_fn
@@ -31,19 +31,15 @@ class InteractiveServer:
 
         subprocess.call(['leanpkg', 'build'])
 
-        print('Using lean version:')
-        lean_version = subprocess.run(['lean', '-v'], capture_output=True, encoding="utf-8").stdout
-        print(lean_version)
-        lean_githash = re.search("commit ([a-z0-9]{12}),", lean_version)
-        if lean_githash:
-            lean_githash = lean_githash.group(1)
+        # print('Using lean version:')
+        # lean_version = subprocess.run(['lean', '-v'], capture_output=True, encoding="utf-8").stdout
+        # print(lean_version)
+        # lean_githash = re.search("commit ([a-z0-9]{12}),", lean_version)
+        # if lean_githash:
+        #    lean_githash = lean_githash.group(1)
 
         # assume leanprover-community repo
-        if lean_githash:
-            core_url = 'https://raw.githubusercontent.com/leanprover-community/lean/{0}/library/'.format(lean_githash)
-        else:
-            core_url = 'https://raw.githubusercontent.com/leanprover-community/lean/master/library/'
-
+        core_url = 'https://raw.githubusercontent.com/leanprover-community/lean/v{0}/library/'.format(self.toolchain)
         core_name = 'lean/library'
 
         lean_p = json.loads(subprocess.check_output(['lean', '-p']))
