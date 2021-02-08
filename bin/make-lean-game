@@ -46,8 +46,8 @@ def render_lean_project(outdir=None, nolib=False, devmode=False, use_leanpkg=Tru
 
 
     InteractiveServer(interactive_path=interactive_path, outdir=outdir,
-            library_zip_fn=game_data['library_zip_fn'], do_not_use_leanpkg=(not use_leanpkg))
-        .copy_files(make_lib=(not nolib))
+            library_zip_fn=game_data['library_zip_fn'],
+            do_not_use_leanpkg=(not use_leanpkg)).copy_files(make_lib=(not nolib))
 
 
     file_reader = FileReader(translator, default_line_handler, readers_list)
