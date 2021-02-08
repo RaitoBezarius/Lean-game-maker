@@ -47,9 +47,7 @@ class InteractiveServer:
         source_lib_path = str(Path(source_lib).resolve()) + '/src'
 
         if self.do_not_use_leanpkg:
-            for name in self.dependencies.keys():
-                dep_cwd = Path(os.getcwd()) / '_target' / 'deps' / name
-                subprocess.call(['lean', '--make', 'src'], cwd=dep_cwd) # FIXME: is it always src/ ?
+            subprocess.call(["lean", "--make", "src"])
         else:
             subprocess.call(['leanpkg', 'build'])
         lean_version = subprocess.run(['lean', '-v'], capture_output=True, encoding="utf-8").stdout
