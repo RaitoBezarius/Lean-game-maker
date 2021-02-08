@@ -15,7 +15,7 @@ from lean_game_maker.interactive_loader import InteractiveServer
 module_path = Path(lean_game_maker.__file__).parent
 interactive_path = module_path.parent / 'interactive_interface'
 
-def render_lean_project(outdir=None, nolib=False, devmode=False, locale='en'):
+def render_lean_project(outdir=None, nolib=False, devmode=False, use_leanpkg=True, locale='en'):
 
     outdir = outdir or 'html'
     Path(outdir).mkdir(exist_ok=True)
@@ -46,7 +46,8 @@ def render_lean_project(outdir=None, nolib=False, devmode=False, locale='en'):
 
 
     InteractiveServer(interactive_path=interactive_path, outdir=outdir,
-            library_zip_fn= game_data['library_zip_fn']).copy_files(make_lib = not nolib)
+            library_zip_fn=game_data['library_zip_fn'], do_not_use_leanpkg=(not use_leanpkg))
+        .copy_files(make_lib=(not nolib))
 
 
     file_reader = FileReader(translator, default_line_handler, readers_list)

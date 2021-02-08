@@ -22,16 +22,18 @@ def build_core_url(declared_lean_version, local_lean_version_string):
     return 'https://raw.githubusercontent.com/leanprover-community/lean/{0}/library/'.format(ver)
 
 class InteractiveServer:
-    def __init__(self, interactive_path, outdir, library_zip_fn):
+    def __init__(self, interactive_path, outdir, library_zip_fn, do_not_use_leanpkg):
         self.interactive_path = interactive_path
         self.outdir = outdir
         self.library_zip_fn = str( (Path(self.outdir) / library_zip_fn).resolve() )
+        self.do_not_use_leanpkg = do_not_use_leanpkg
 
         try:
             leanpkg_toml = toml.load('leanpkg.toml')
         except FileNotFoundError:
             raise FileNotFoundError("Couldn't find a leanpkg.toml, I give up.")
         self.toolchain = leanpkg_toml['package']['lean_version']
+        self.dependencies = leanpkg_toml['dependencies']
 
         if os.name == 'nt':
             self.js_wasm_path = Path(self.interactive_path / 'lean_server' / self.toolchain.replace(':', ' '))
@@ -44,7 +46,12 @@ class InteractiveServer:
         source_lib = "."
         source_lib_path = str(Path(source_lib).resolve()) + '/src'
 
-        subprocess.call(['leanpkg', 'build'])
+        if self.do_not_use_leanpkg:
+            for name in self.dependencies.keys():
+                dep_cwd = Path(os.getcwd()) / '_target' / 'deps' / name
+                subprocess.call(['lean', '--make', 'src'], cwd=dep_cwd) # FIXME: is it always src/ ?
+        else:
+            subprocess.call(['leanpkg', 'build'])
         lean_version = subprocess.run(['lean', '-v'], capture_output=True, encoding="utf-8").stdout
         print('Local lean version:', lean_version)
 
